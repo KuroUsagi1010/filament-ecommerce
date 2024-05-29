@@ -155,6 +155,8 @@ class ProductResource extends Resource
                     ->label("Added by"),
                 Tables\Columns\TextColumn::make('editor.name')
                     ->label("Last edited by"),
+                Tables\Columns\TextColumn::make('slug')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
