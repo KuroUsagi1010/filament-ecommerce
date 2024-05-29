@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('modified_by');
             $table->string('name');
             $table->string('brand')->nullable();
+            $table->string("slug");
             $table->json('images');
             $table->longText("description")->nullable();
             $table->timestamps();

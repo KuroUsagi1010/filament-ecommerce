@@ -4,11 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Casts\PanelEmailCast;
 use App\Enums\AccountRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -42,28 +44,19 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'email' => PanelEmailCast::class
         ];
     }
 
-    /**
-     * Interact with the user's first name.
-     */
-    protected function email(): Attribute
+
+    public function categories(): HasMany
     {
-        return Attribute::make(
-            set: fn (string $value) => $this->emailDomainSuffix($value),
-        );
+        return $this->hasMany(Category::class);
     }
 
-
-    private function emailDomainSuffix($value)
+    public function products(): HasMany
     {
-        $panelDomainAccess = "@" . config('app.filament.panel_domain');
-        $value = trim(str_ends_with($value, $panelDomainAccess)
-            ? $value
-            : $value . $panelDomainAccess);
-
-        return $value;
+        return $this->hasMany(Product::class);
     }
 }
