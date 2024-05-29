@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
+use App\Actions\GenerateSku;
+use App\Contracts\SkuGeneratorInterface;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -10,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class VariantsRelationManager extends RelationManager
@@ -69,19 +72,40 @@ class VariantsRelationManager extends RelationManager
                 TextColumn::make('editor.name')
                     ->label("Modified by"),
             ])
-            ->filters([
-                //
-            ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->mutateFormDataUsing(function (array $data): array {
+                Tables\Actions\CreateAction::make()->mutateFormDataUsing(function (array $data, SkuGeneratorInterface $skuService): array {
                     $data['user_id'] = auth()->id();
+
+                    if (!empty($data['sku'])) {
+                        $data['sku'] = Str::upper(Str::replace(" ", "-", $data['sku']));
+                    }
+
                     return $data;
+                })->after(function (Model $record, SkuGeneratorInterface $skuService) {
+                    // consider moving this to action class or invokable classes
+                    if (empty($record->sku)) {
+                        $record->load('product');
+                        $record->sku = $skuService->generate($record->toArray());
+                        $record->save();
+                    }
                 }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->mutateFormDataUsing(function (array $data): array {
                     $data['modified_by'] = auth()->id();
+
+                    if (!empty($data['sku'])) {
+                        $data['sku'] = Str::upper(Str::replace(" ", "-", $data['sku']));
+                    }
+
                     return $data;
+                })->after(function (Model $record, SkuGeneratorInterface $skuService) {
+                    // consider moving this to action class or invokable classes
+                    if (empty($record->sku)) {
+                        $record->load('product');
+                        $record->sku = $skuService->generate($record->toArray());
+                        $record->save();
+                    }
                 }),
                 Tables\Actions\DeleteAction::make(),
             ])
