@@ -133,7 +133,36 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                //
+                ImageColumn::make('images')
+                    ->circular()
+                    ->limit(3)
+                    ->stacked()
+                    ->visibility('private'),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('slug')
+                    ->hidden()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->html()
+                    ->limit(70)
+                    ->wrap()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('variants_count')
+                    ->label("Variants Available")
+                    ->counts('variants'),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label("Added by"),
+                Tables\Columns\TextColumn::make('editor.name')
+                    ->label("Last edited by"),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
