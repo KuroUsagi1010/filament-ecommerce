@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\AccountRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +18,7 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         $domain = config('app.filament.panel_domain');
-        return str_ends_with($this->email, "@{$domain}") && $this->hasVerifiedEmail();
+        return str_ends_with($this->email, "@{$domain}") && $this->role == AccountRole::Admin;
     }
 
     /**
