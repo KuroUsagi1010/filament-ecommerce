@@ -12,6 +12,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -36,12 +38,19 @@ class UserResource extends Resource
                     ->maxLength(255),
                 TextInput::make('email')
                     ->email()
-                    ->unique()
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->endsWith(["@" . config('app.filament.panel_domain')], fn (Get $get): bool => $get('role') == AccountRole::Admin->value)
+                    ->helperText("If you are adding an admin. please make sure that the email domain is with @" . config('app.filament.panel_domain'))
+                    ->validationMessages([
+                        'ends_with' => 'The :attribute must use the domain @' . config('app.filament.panel_domain') . " if the account is an admin.",
+                    ])
                     ->maxLength(255),
-                DateTimePicker::make('email_verified_at')
+                DateTimePicker::make('email_verified_at'),
+                TextInput::make('password')
                     ->dehydrated(fn ($state) => filled($state))
                     ->password()
-                    ->required()
+                    ->revealable(fn (string $context): bool => $context === 'create')
                     ->required(fn (string $context): bool => $context === 'create')
                     ->maxLength(255),
                 Select::make('role')
