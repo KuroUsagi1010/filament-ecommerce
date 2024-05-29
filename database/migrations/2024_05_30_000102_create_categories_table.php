@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('user_id'); // I don't want to enforce cascade on delete here as the context of the app is still not clear
+            $table->foreignId('modified_by')->nullable();
             $table->timestamps();
         });
     }
