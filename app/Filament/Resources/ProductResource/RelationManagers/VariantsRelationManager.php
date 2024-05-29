@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
@@ -55,23 +56,33 @@ class VariantsRelationManager extends RelationManager
                 ImageColumn::make('image')
                     ->circular()
                     ->visibility('private'),
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('price')->money(),
-                Tables\Columns\TextColumn::make('available_stock'),
-                Tables\Columns\TextColumn::make('sku')->label("SKU")->tooltip("Stock Keeping Unit"),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('name')->searchable(),
+                TextColumn::make('price')->money(),
+                TextColumn::make('available_stock')
+                    ->sortable(),
+                TextColumn::make('sku')
+                    ->searchable()
+                    ->label("SKU")
+                    ->tooltip("Stock Keeping Unit"),
+                TextColumn::make('user.name')
                     ->label("Added by"),
-                Tables\Columns\TextColumn::make('editor.name')
+                TextColumn::make('editor.name')
                     ->label("Modified by"),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()->mutateFormDataUsing(function (array $data): array {
+                    $data['user_id'] = auth()->id();
+                    return $data;
+                }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->mutateFormDataUsing(function (array $data): array {
+                    $data['modified_by'] = auth()->id();
+                    return $data;
+                }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
