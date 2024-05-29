@@ -123,4 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'filament' => [
+        'panel_domain' => env("ADMIN_PANEL_DOMAIN", "test.com")
+    ]
 ];
