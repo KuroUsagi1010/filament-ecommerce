@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\AccountRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,7 +19,7 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         $domain = config('app.filament.panel_domain');
-        return str_ends_with($this->email, "@{$domain}") && $this->role == AccountRole::Admin->value;
+        return str_ends_with($this->email, "@{$domain}");
     }
 
     /**
@@ -43,5 +44,26 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'is_active' => 'boolean'
         ];
+    }
+
+    /**
+     * Interact with the user's first name.
+     */
+    protected function email(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => $this->emailDomainSuffix($value),
+        );
+    }
+
+
+    private function emailDomainSuffix($value)
+    {
+        $panelDomainAccess = "@" . config('app.filament.panel_domain');
+        $value = trim(str_ends_with($value, $panelDomainAccess)
+            ? $value
+            : $value . $panelDomainAccess);
+
+        return $value;
     }
 }

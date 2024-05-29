@@ -29,6 +29,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
+    protected static ?string $navigationLabel = 'User Management';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -37,14 +39,11 @@ class UserResource extends Resource
                     ->required()
                     ->maxLength(255),
                 TextInput::make('email')
-                    ->email()
                     ->required()
+                    ->email()
                     ->unique(ignoreRecord: true)
-                    ->endsWith(["@" . config('app.filament.panel_domain')], fn (Get $get): bool => $get('role') == AccountRole::Admin->value)
-                    ->helperText("If you are adding an admin. please make sure that the email domain is with @" . config('app.filament.panel_domain'))
-                    ->validationMessages([
-                        'ends_with' => 'The :attribute must use the domain @' . config('app.filament.panel_domain') . " if the account is an admin.",
-                    ])
+                    ->endsWith(["@" . config('app.filament.panel_domain')])
+                    ->helperText("Please make sure that the email domain ends with @" . config('app.filament.panel_domain'))
                     ->maxLength(255),
                 DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
