@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('product_variants', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
+            $table->foreignId('modified_by')->nullable();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete(); // delete all variants when the product is deleted
+            $table->string("name");
+            $table->json('image')->nullable();
+            $table->decimal('price', 10, 2);
+            $table->integer('available_stock')->default(0);
+            $table->string('sku')->nullable();
             $table->timestamps();
         });
     }

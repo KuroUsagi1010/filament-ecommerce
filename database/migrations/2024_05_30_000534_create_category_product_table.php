@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->foreignId('user_id'); // I don't want to enforce cascade on delete here as the context of the app is still not clear
-            $table->timestamps();
+        Schema::create('category_product', function (Blueprint $table) {
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
         });
     }
 
@@ -24,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('category_product');
     }
 };
