@@ -18,7 +18,7 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         $domain = config('app.filament.panel_domain');
-        return str_ends_with($this->email, "@{$domain}") && $this->role == AccountRole::Admin;
+        return str_ends_with($this->email, "@{$domain}") && $this->role == AccountRole::Admin->value;
     }
 
     /**
