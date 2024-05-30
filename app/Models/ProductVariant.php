@@ -15,7 +15,6 @@ class ProductVariant extends Model
     use HasFactory;
 
     protected $casts = [
-        'price' => MoneyCast::class,
         'image' => 'array'
     ];
 

@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'is_active' => true,
-            'role' => AccountRole::Admin, // seeding admin by default
+            'role' => AccountRole::Admin->value, // seeding admin by default
             'remember_token' => Str::random(10),
         ];
     }
