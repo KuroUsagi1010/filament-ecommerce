@@ -32,7 +32,7 @@ class CreateProduct extends CreateRecord
         /** @var SkuGeneratorInterface $skuService */
         $skuService = app()->make(SkuGeneratorInterface::class);
 
-        foreach ($record->variants as $key => $variant) {
+        foreach ($record->variants as $variant) {
             if (empty($variant->sku)) {
                 $variant->sku = $skuService->generate($variant, ['product']);
                 $variant->save();

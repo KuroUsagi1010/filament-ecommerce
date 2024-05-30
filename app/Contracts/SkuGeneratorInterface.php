@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Defines the sku generator service contract
- * @method generate
- * @method addPartGenerator
- * @method clear
+ * @method string generate()
+ * @method self addPartGenerator()
+ * @method self clear()
  */
 interface SkuGeneratorInterface
 {
