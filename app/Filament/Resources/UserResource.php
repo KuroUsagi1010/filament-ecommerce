@@ -49,7 +49,8 @@ class UserResource extends Resource
                 Select::make('role')
                     ->required()
                     ->default(AccountRole::User->value)
-                    ->options(AccountRole::all()),
+                    ->options(AccountRole::all())
+                    ->selectablePlaceholder(false),
                 Toggle::make('is_active')
                     ->required()
                     ->default(true)

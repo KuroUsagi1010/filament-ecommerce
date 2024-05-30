@@ -14,8 +14,8 @@ enum AccountRole: string
     public static function all(): array
     {
         return array_combine(
-            array_map(fn ($case) => $case->name, self::cases()),
-            array_map(fn ($case) => $case->value, self::cases())
+            array_map(fn ($case) => $case->value, self::cases()),
+            array_map(fn ($case) => $case->name, self::cases())
         );
     }
 
