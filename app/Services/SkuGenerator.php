@@ -3,10 +3,6 @@
 namespace App\Services;
 
 use App\Contracts\BaseSkuPartGenerator;
-use App\Contracts\SkuGeneratorInterface;
-use App\Traits\SkuDefaultGenerators;
-use Closure;
-use Illuminate\Support\Str;
 
 class SkuGenerator extends BaseSkuPartGenerator
 {
@@ -21,8 +17,10 @@ class SkuGenerator extends BaseSkuPartGenerator
      * your own callbacks
      */
 
-    protected function fromGalahad()
+    protected function fromSomethingElse()
     {
-        return "GAL";
+        // a test to see that this generator gets called
+        info("SKU Generator: fromSomethingElse(): Called");
+        return "";
     }
 }

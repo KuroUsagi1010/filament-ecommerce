@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
-use App\Actions\GenerateSku;
 use App\Contracts\SkuGeneratorInterface;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
@@ -84,8 +83,7 @@ class VariantsRelationManager extends RelationManager
                 })->after(function (Model $record, SkuGeneratorInterface $skuService) {
                     // consider moving this to action class or invokable classes
                     if (empty($record->sku)) {
-                        $record->load('product');
-                        $record->sku = $skuService->generate($record->toArray());
+                        $record->sku = $skuService->generate($record, ['product']);
                         $record->save();
                     }
                 }),
@@ -102,8 +100,7 @@ class VariantsRelationManager extends RelationManager
                 })->after(function (Model $record, SkuGeneratorInterface $skuService) {
                     // consider moving this to action class or invokable classes
                     if (empty($record->sku)) {
-                        $record->load('product');
-                        $record->sku = $skuService->generate($record->toArray());
+                        $record->sku = $skuService->generate($record, ['product']);
                         $record->save();
                     }
                 }),

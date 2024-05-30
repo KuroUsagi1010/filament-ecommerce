@@ -2,8 +2,10 @@
 
 namespace App\Contracts;
 
+use App\Factories\SkuGeneratorFactory;
 use App\Traits\SkuDefaultGenerators;
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionMethod;
@@ -14,9 +16,9 @@ abstract class BaseSkuPartGenerator implements SkuGeneratorInterface
 
     /** 
      * an array of information from the model
-     * @var array
+     * @var Model
      */
-    protected array $record;
+    protected Model $record;
 
     /**  
      * holds all the sku part generators 
@@ -34,49 +36,34 @@ abstract class BaseSkuPartGenerator implements SkuGeneratorInterface
     protected bool $dontUseDefaults = false;
 
     /** 
-     * the default generators use by this class 
+     * the private default generators use by this class 
      * 
      *  @var array
      */
     private $defaultGenerators = [
+        'defaultVariantId',
         'defaultVariantName',
         'defaultProductName',
-        'defaultBrand',
+        'defaultBrand'
     ];
 
     public function __construct()
     {
-        // Initialize with default generator
-        foreach ($this->defaultGenerators as $gen) {
-            $this->generators[] = Closure::fromCallable([$this, $gen]);
-        }
-
-        // Discover and add new functions as generators
-        $this->discoverGenerators();
+        $this->generators = SkuGeneratorFactory::create(
+            $this,
+            !$this->dontUseDefaults ? $this->defaultGenerators : [],
+        );
     }
 
-
-    protected function discoverGenerators()
+    public function generate(Model $record, array $relations = []): string
     {
-        $class = new ReflectionClass($this);
-        $methods = $class->getMethods(ReflectionMethod::IS_PROTECTED);
-
-        foreach ($methods as $method) {
-            if (Str::startsWith($method->getName(), "from")) {
-                // protected methods that starts with "from" are added as generators
-                $this->generators[] = Closure::fromCallable([$this, $method->getName()]);
-            }
-        }
-    }
-
-    public function generate(array $data): string
-    {
-        $this->record = $data;
+        $this->record = $record->load($relations);
 
         $sku = "";
-        foreach ($this->generators as $generator) {
+        foreach ($this->generators as $name => $generator) {
             $result = call_user_func($generator);
             $sku .= !empty($result) ? ($result . " ") : "";
+            // info("GENERATOR", [$name, $result]);
         }
 
         return Str::replace(" ", "-", rtrim($sku));
@@ -102,7 +89,7 @@ abstract class BaseSkuPartGenerator implements SkuGeneratorInterface
      * returns 4 letters based on the number of words the argument have
      * @param string $string
      */
-    protected function getLetters($string)
+    protected static function getLetters($string)
     {
         $parts = explode(" ", $string);
         $numWords = count($parts);
