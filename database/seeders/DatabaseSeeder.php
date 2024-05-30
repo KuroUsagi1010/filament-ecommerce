@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin User',
             'email' => 'admin@test.com',
             'email_verified_at' => now(),
-            'role' => AccountRole::Admin
+            'role' => AccountRole::Admin->value
         ]);
 
         foreach (DefaultCategoryEnum::all() as $value) {
