@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProductResource\Pages;
 
+use App\Contracts\SkuGeneratorInterface;
 use App\Filament\Resources\ProductResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
@@ -17,5 +18,25 @@ class CreateProduct extends CreateRecord
         $data['slug'] = Str::slug($data['name']) . "-" . Str::uuid(); // set a url friendly string
 
         return $data;
+    }
+
+
+    protected function afterCreate(): void
+    {
+        /**
+         * Cant find the proper way to hook aftersave on a Repeater Component. 
+         * here's the workaround i thought off
+         */
+        $record = $this->getRecord()->load('variants');
+
+        /** @var SkuGeneratorInterface $skuService */
+        $skuService = app()->make(SkuGeneratorInterface::class);
+
+        foreach ($record->variants as $key => $variant) {
+            if (empty($variant->sku)) {
+                $variant->sku = $skuService->generate($variant, ['product']);
+                $variant->save();
+            }
+        }
     }
 }
