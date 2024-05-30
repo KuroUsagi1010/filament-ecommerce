@@ -32,8 +32,9 @@ https://ecommerce.kurousagi.fun/
 4. Copy the `.env.example` file to `.env` and configure your database settings.
 5. Run `php artisan key:generate` to generate the application key.
 6. Run `php artisan migrate` to migrate the database.
-7. Run `php artisan config:cache` to cache the configuration.
+7. Run `php artisan optimize:clear` to cache the configuration.
 8. Run `php artisan storage:link` to link the storage folder.
+9. Run `php artisan db:seed` if you want to have a default admin account and default categories.
     
     
 ## Run Locally
