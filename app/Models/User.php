@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Casts\PanelEmailCast;
+use App\Casts\RoleCast;
 use App\Enums\AccountRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -45,7 +46,8 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
-            'email' => PanelEmailCast::class
+            'email' => PanelEmailCast::class,
+            'role' => RoleCast::class
         ];
     }
 
