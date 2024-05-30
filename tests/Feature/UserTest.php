@@ -2,12 +2,7 @@
 
 use App\Enums\AccountRole;
 use App\Filament\Resources\UserResource;
-use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
-use Livewire\Livewire;
-
-use function Pest\Livewire\livewire;
 
 it('can render page when admin is viewing', function () {
     $this->get(UserResource::getUrl('index'))->assertSuccessful();
