@@ -87,6 +87,7 @@ class ProductResource extends Resource
                             ->directory('products')
                             ->acceptedFileTypes(['image/jpeg', 'image/png'])
                             ->maxFiles(10)
+                            ->helperText("Add one or more images to display your product.")
                             ->maxSize(10000),
                     ]),
 

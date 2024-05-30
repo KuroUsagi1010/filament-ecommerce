@@ -60,7 +60,7 @@ class VariantsRelationManager extends RelationManager
                     ->circular()
                     ->visibility('private'),
                 TextColumn::make('name')->searchable(),
-                TextColumn::make('price')->money(),
+                TextColumn::make('price')->money("PHP"),
                 TextColumn::make('available_stock')
                     ->sortable(),
                 TextColumn::make('sku')
