@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\BaseSkuPartGenerator;
+use Illuminate\Support\Str;
 
 class SkuGenerator extends BaseSkuPartGenerator
 {
@@ -13,14 +14,19 @@ class SkuGenerator extends BaseSkuPartGenerator
      * function names must start with "from" in order to be registered as part generator 
      * ex: fromProductColor
      * 
-     * you may call the clear method if you dont want other generators when you pass
-     * your own callbacks
+     * you may set @var $dontUseDefaults to true if you dont want to use the default generators.
      */
 
+    protected bool $dontUseDefaults = false;
+
+    /**
+     * Sample custom part generator function
+     */
     protected function fromSomethingElse()
     {
-        // a test to see that this generator gets called
         info("SKU Generator: fromSomethingElse(): Called");
+
+        // return Str::padLeft($this->record->id, 4, "0");
         return "";
     }
 }

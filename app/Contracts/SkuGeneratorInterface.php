@@ -46,7 +46,15 @@ interface SkuGeneratorInterface
     /**
      * call this method if you want to remove all default generators 
      * before you add your custom generators
+     * @deprecated
      * @return self
      */
     public function clear(): self;
+
+    /**
+     * tells the generator to not use the default partial generators
+     * @param bool $value
+     * @return self
+     */
+    public function dontUseDefaults(): self;
 }
