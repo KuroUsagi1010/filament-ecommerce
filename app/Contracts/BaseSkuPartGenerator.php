@@ -49,24 +49,15 @@ abstract class BaseSkuPartGenerator implements SkuGeneratorInterface
 
     public function __construct()
     {
-        $this->generators = SkuGeneratorFactory::create(
-            $this,
-            !$this->dontUseDefaults ? $this->defaultGenerators : [],
-        );
     }
 
     public function generate(Model $record, array $relations = []): string
     {
         $this->record = $record->load($relations);
 
-        $sku = "";
-        foreach ($this->generators as $name => $generator) {
-            $result = call_user_func($generator);
-            $sku .= !empty($result) ? ($result . " ") : "";
-            // info("GENERATOR", [$name, $result]);
-        }
+        $this->discoverGenerators();
 
-        return Str::replace(" ", "-", rtrim($sku));
+        return $this->call();
     }
 
     public function addPartGenerator(Closure ...$callbacks): self
@@ -85,18 +76,62 @@ abstract class BaseSkuPartGenerator implements SkuGeneratorInterface
         return $this;
     }
 
+    public function dontUseDefaults(bool $value = true): self
+    {
+        $this->dontUseDefaults = $value;
+        return $this;
+    }
+
     /**
-     * returns 4 letters based on the number of words the argument have
+     * uses the SkuGeneratorFactory to load all the generators
+     * - default generators
+     * - custom generators
+     */
+    private function discoverGenerators()
+    {
+        $this->generators = array_merge($this->generators, SkuGeneratorFactory::create(
+            $this,
+            !$this->dontUseDefaults ? $this->defaultGenerators : [],
+        ));
+    }
+
+    /**
+     * loop thru all the generators to create the SKU string
+     */
+    private function call(): string
+    {
+        $sku = "";
+        foreach ($this->generators as $name => $generator) {
+            $result = call_user_func($generator);
+            $sku .= !empty($result) ? ($result . " ") : "";
+            // info("GENERATOR", [$name, $result]);
+        }
+
+        return Str::replace(" ", "-", rtrim($sku));
+    }
+
+    /**
+     * Returns 4 letters based on the number of words in the argument.
+     *
      * @param string $string
+     * @return string
      */
     protected static function getLetters($string)
     {
         $parts = explode(" ", $string);
         $numWords = count($parts);
 
-        return Str::upper(
-            $numWords === 1 ? substr($string, 0, 4) : ($numWords === 2 ? substr($parts[0], 0, 2) . substr($parts[1], 0, 2) :
-                implode('', array_map(fn ($part) => $part[0], array_slice($parts, 0, 4))))
-        );
+        if ($numWords === 1) {
+            return Str::upper(substr($string, 0, 4));
+        }
+
+        if ($numWords === 2) {
+            return Str::upper(substr($parts[0], 0, 2) . substr($parts[1], 0, 2));
+        }
+
+        return Str::upper(implode('', array_map(
+            fn ($part) => $part[0],
+            array_slice($parts, 0, 4)
+        )));
     }
 }
